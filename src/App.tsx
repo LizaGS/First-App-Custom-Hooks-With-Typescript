@@ -1,96 +1,46 @@
-import { useState } from 'react';
 import './App.css';
-import CSS from 'csstype';
+import useButtonClick from './hooks/useButtonClick';
+import useTheme from './hooks/useTheme';
+import { leftLightTheme, leftDarkTheme, rightLightTheme, rightDarkTheme, buttonLight, buttonDark } from './utils/appStyles';
+import useCounter from './hooks/useCounter';
+import useClick from './hooks/useClick';
+import usePrintText from './hooks/usePrintText';
 
-//-------------------------------------LEFT THEME-------------------------------------
-const leftLightTheme: CSS.Properties = {
-  background: '#cecece',
-  color: '#2f4f4f'
-}
-const leftDarkTheme: CSS.Properties = {
-  background: 'white',
-  color: '#696969'
-}
-//-------------------------------------RIGHT THEME-------------------------------------
-const rightLightTheme: CSS.Properties = {
-  background: 'white',
-  color: '#000000'
-}
-const rightDarkTheme: CSS.Properties = {
-  background: '#008080',
-  color: 'white'
-}
-//-------------------------------------BUTTON THEME-------------------------------------
-const buttonLight: CSS.Properties = {
-  background: '#cc0000',
-  color: 'white'
-}
-const buttonDark: CSS.Properties = {
-  background: '#f0f8ff',
-  color: '#800080'
-}
-
-
-function formatedTimestamp(): string {
-  const d = new Date()
-  const date = d.toISOString().split('T')[0];
-  const time = d.toTimeString().split(' ')[0];
-  return `${date} ${time}`
-}
-
-type AppProps = {
-  datas: string[],
-  theme: string,
-  message: string,
-  count: number,
-  buttons: number[],
-}
 
 function App() {
+  const { datas, print } = usePrintText();
 
-  const [datas, setDatas] = useState<AppProps['datas']>([]);
+  //------------------------------------------------------------------------------------
 
-  const [theme, setTheme] = useState<AppProps['theme']>('light');
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    theme === 'light' ? setTheme('dark') : setTheme('light');
-    setDatas([
-      ...datas,
-      formatedTimestamp().concat(` Theme was set to ${theme === 'light' ? 'dark' : 'light'}`)
-    ]);
+  const { theme, handleClick } = useTheme();
+  const _handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleClick(e)
+    print(` Theme was set to ${theme === 'light' ? 'dark' : 'light'}`)
   }
   //------------------------------------------------------------------------------------
-  const [message, setMessage] = useState<AppProps['message']>('');
-  const handleMessage = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    event.currentTarget.disabled = true;
-    setDatas([
-      ...datas,
-      formatedTimestamp().concat(` Message Sent: ${message}`)
-    ]);
+
+  const { message, setMessage, handleMessage } = useButtonClick();
+
+  const _handleMessage = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleMessage(e)
+    print(` Message Sent: ${message}`)
     setMessage('')
   }
+
   //------------------------------------------------------------------------------------
-  const [count, setCount] = useState<AppProps['count']>(1);
-  const [buttons, setButtons] = useState<AppProps['buttons']>([]);
-  const handleAddButton = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-    setCount(count + 1)
-    setButtons([
-      ...buttons,
-      count + 1
-    ])
-    setDatas([
-      ...datas,
-      formatedTimestamp().concat(` Button ${count} added`)
-    ])
+
+  const { count, buttons, handleAddButton } = useCounter();
+  const _handleAddButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleAddButton(e)
+    print(` Button ${count} added`)
   }
+
   //------------------------------------------------------------------------------------
-  const handleClicked = (event: React.MouseEvent<HTMLButtonElement>) => {
-    setDatas([
-      ...datas,
-      formatedTimestamp().concat(` Button ${(event.target as HTMLInputElement).value} clicked`)
-    ])
+
+  const { handleClicked } = useClick()
+  const _handleClicked = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleClicked(e)
+    print(` Button ${(e.target as HTMLInputElement).value} clicked`)
   }
 
   return (
@@ -100,7 +50,7 @@ function App() {
         style={theme === 'light' ? leftLightTheme : leftDarkTheme}
       >
         <button
-          onClick={handleClick}
+          onClick={_handleClick}
           style={theme === 'light' ? buttonLight : buttonDark}
         >
           Set {theme === 'light' ? 'dark' : 'light'} theme
@@ -117,7 +67,7 @@ function App() {
           <button
             className='click'
             style={theme === 'light' ? buttonLight : buttonDark}
-            onClick={handleMessage}
+            onClick={_handleMessage}
             disabled={!message}
           >
             Click
@@ -127,7 +77,7 @@ function App() {
         <div className='buttonContainer'>
           <button
             style={theme === 'light' ? buttonLight : buttonDark}
-            onClick={handleAddButton}
+            onClick={_handleAddButton}
           >
             Add Button {count}
           </button>
@@ -138,7 +88,7 @@ function App() {
                 key={index}
                 className='button'
                 style={theme === 'light' ? buttonLight : buttonDark}
-                onClick={handleClicked}
+                onClick={_handleClicked}
               >
                 Button {button - 1}
               </button>)

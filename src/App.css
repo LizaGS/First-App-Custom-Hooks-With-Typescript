@@ -7,13 +7,10 @@
 
 .leftside {
   text-align: center;
-  background: red;
 }
 
 .rightside {
   text-align: center;
-  background: pink;
-  
 }
 
 .button {
@@ -28,11 +25,11 @@
   position: relative;
   display: inline-block;
 }
+
 .textarea {
    height: 1.1rem;
    line-height: 20px;
    vertical-align: middle
-
 }
 
 .click {
